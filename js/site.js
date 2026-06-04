@@ -68,10 +68,131 @@
     const shell = document.querySelector("[data-shell]");
     const main = shell?.querySelector(".main");
     const veil = document.querySelector("[data-inspiration-veil]");
+    const inspirationPieces = veil
+      ? gsap.utils.toArray(veil.querySelectorAll(".inspiration-piece"))
+      : [];
+    const inspirationPrev = veil?.querySelector("[data-inspiration-prev]");
+    const inspirationNext = veil?.querySelector("[data-inspiration-next]");
     const pushLayers = main ? [main] : [];
     let inspirationTl;
     let inspirationCtx;
     let isInspirationOpen = false;
+    let inspirationIndex = 0;
+    let inspirationVideosReady = false;
+
+    function getActivePiece() {
+      return inspirationPieces[inspirationIndex];
+    }
+
+    function setInspirationSlide(nextIndex, options = {}) {
+      const count = inspirationPieces.length;
+      if (!count) return;
+
+      const { animate = false } = options;
+      inspirationIndex = ((nextIndex % count) + count) % count;
+
+      inspirationPieces.forEach((piece, i) => {
+        const active = i === inspirationIndex;
+        piece.classList.toggle("is-active", active);
+        piece.hidden = !active;
+        if (!active && typeof gsap !== "undefined") {
+          gsap.set(piece, { autoAlpha: 0, y: 0 });
+        }
+      });
+
+      const navDisabled = count <= 1;
+      if (inspirationPrev) inspirationPrev.disabled = navDisabled;
+      if (inspirationNext) inspirationNext.disabled = navDisabled;
+
+      if (!animate || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        return;
+      }
+
+      const active = getActivePiece();
+      if (!active) return;
+      gsap.fromTo(
+        active,
+        { autoAlpha: 0, y: 10 },
+        { autoAlpha: 1, y: 0, duration: 0.26, ease: "power2.out" },
+      );
+    }
+
+    function goInspirationPrev() {
+      setInspirationSlide(inspirationIndex - 1, { animate: true });
+    }
+
+    function goInspirationNext() {
+      setInspirationSlide(inspirationIndex + 1, { animate: true });
+    }
+
+    function buildYtEmbedUrl(videoId) {
+      const url = new URL(`https://www.youtube.com/embed/${videoId}`);
+      url.searchParams.set("rel", "0");
+      url.searchParams.set("modestbranding", "1");
+      if (location.origin && location.protocol !== "file:") {
+        url.searchParams.set("origin", location.origin);
+      }
+      return url.toString();
+    }
+
+    function buildYtWatchUrl(videoId) {
+      const url = new URL("https://www.youtube.com/watch");
+      url.searchParams.set("v", videoId);
+      return url.toString();
+    }
+
+    function replaceWithVideoFallback(iframe, videoId) {
+      const fallback = document.createElement("a");
+      const title = iframe.getAttribute("title") || "YouTube video";
+      const icon = document.createElement("span");
+      const kicker = document.createElement("span");
+      const label = document.createElement("span");
+
+      fallback.className = "inspiration-media inspiration-video-fallback";
+      fallback.href = buildYtWatchUrl(videoId);
+      fallback.target = "_blank";
+      fallback.rel = "noopener";
+      fallback.setAttribute("aria-label", `Open ${title} on YouTube`);
+
+      icon.className = "inspiration-video-fallback-icon";
+      icon.setAttribute("aria-hidden", "true");
+      kicker.className = "inspiration-video-fallback-kicker";
+      kicker.textContent = "Watch on YouTube";
+      label.className = "inspiration-video-fallback-title";
+      label.textContent = title;
+
+      fallback.append(icon, kicker, label);
+      iframe.replaceWith(fallback);
+    }
+
+    function loadInspirationVideos() {
+      if (!veil || inspirationVideosReady) return;
+      veil.querySelectorAll("iframe[data-yt-id]").forEach((iframe) => {
+        const videoId = iframe.dataset.ytId;
+        if (!videoId || iframe.getAttribute("src")) return;
+        if (location.protocol === "file:") {
+          replaceWithVideoFallback(iframe, videoId);
+          return;
+        }
+        iframe.setAttribute("src", buildYtEmbedUrl(videoId));
+        iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+      });
+      inspirationVideosReady = true;
+    }
+
+    function unloadInspirationVideos() {
+      if (!veil) return;
+      veil.querySelectorAll("iframe[data-yt-id]").forEach((iframe) => {
+        iframe.removeAttribute("src");
+      });
+      inspirationVideosReady = false;
+    }
+
+    function resetInspirationPieces() {
+      if (!inspirationPieces.length) return;
+      gsap.set(inspirationPieces, { clearProps: "opacity,visibility,transform" });
+      setInspirationSlide(0);
+    }
 
     /** 推动距离 = 主内容区（.main）高度，向上为负值 */
     function getContentPushY() {
@@ -116,18 +237,24 @@
         gsap.set(main, { y: getContentPushY() });
         gsap.set(veil, { autoAlpha: 1 });
         gsap.set(document.body, { backgroundColor: "#000000" });
+        loadInspirationVideos();
+        resetInspirationPieces();
         return;
       }
 
       gsap.set(pushLayers, { y: 0, clearProps: "transform" });
       gsap.set(veil, { autoAlpha: 0 });
       gsap.set(document.body, { backgroundColor: "" });
+      unloadInspirationVideos();
+      resetInspirationPieces();
     }
 
     function openInspiration() {
       isInspirationOpen = true;
       document.body.classList.add("inspiration-active");
       setInspirationA11y(true);
+      setInspirationSlide(0);
+      loadInspirationVideos();
       inspirationTl.play(0);
     }
 
@@ -146,8 +273,23 @@
 
     const mm = gsap.matchMedia();
 
-    function onInspirationEscape(event) {
-      if (event.key !== "Escape" || !isInspirationOpen) return;
+    function onInspirationKeydown(event) {
+      if (!isInspirationOpen) return;
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        goInspirationPrev();
+        return;
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        goInspirationNext();
+        return;
+      }
+
+      if (event.key !== "Escape") return;
+
       if (inspirationTl) {
         closeInspiration();
       } else {
@@ -161,12 +303,17 @@
     }
 
     mm.add("(prefers-reduced-motion: reduce)", () => {
+      setInspirationSlide(0);
       inspirationBtn.addEventListener("click", onReducedMotionClick);
-      document.addEventListener("keydown", onInspirationEscape);
+      inspirationPrev?.addEventListener("click", goInspirationPrev);
+      inspirationNext?.addEventListener("click", goInspirationNext);
+      document.addEventListener("keydown", onInspirationKeydown);
 
       return () => {
         inspirationBtn.removeEventListener("click", onReducedMotionClick);
-        document.removeEventListener("keydown", onInspirationEscape);
+        inspirationPrev?.removeEventListener("click", goInspirationPrev);
+        inspirationNext?.removeEventListener("click", goInspirationNext);
+        document.removeEventListener("keydown", onInspirationKeydown);
         applyInspirationInstant(false);
       };
     });
@@ -177,6 +324,15 @@
         gsap.set(pushLayers, { y: 0, force3D: true });
         gsap.set(inspirationLabel, { autoAlpha: 1, y: 0 });
         gsap.set(inspirationDown, { autoAlpha: 0, y: 8, pointerEvents: "none" });
+        if (inspirationPieces.length) {
+          gsap.set(inspirationPieces, { autoAlpha: 0, force3D: true });
+          const activePiece = getActivePiece();
+          if (activePiece) {
+            gsap.set(activePiece, { y: 14, force3D: true });
+          }
+        }
+
+        setInspirationSlide(0);
 
         inspirationTl = gsap.timeline({
           paused: true,
@@ -185,6 +341,11 @@
             isInspirationOpen = false;
             document.body.classList.remove("inspiration-active");
             setInspirationA11y(false);
+            unloadInspirationVideos();
+            setInspirationSlide(0);
+            if (inspirationPieces.length) {
+              gsap.set(inspirationPieces, { autoAlpha: 0, y: 14 });
+            }
           },
         })
           .to(main, { y: getContentPushY, duration: 0.4 }, 0)
@@ -206,14 +367,32 @@
             },
             "<0.06",
           );
+
+        const activePiece = getActivePiece();
+        if (activePiece) {
+          inspirationTl.to(
+            activePiece,
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.38,
+              ease: "power2.out",
+            },
+            0.22,
+          );
+        }
       });
 
       inspirationBtn.addEventListener("click", toggleInspiration);
-      document.addEventListener("keydown", onInspirationEscape);
+      inspirationPrev?.addEventListener("click", goInspirationPrev);
+      inspirationNext?.addEventListener("click", goInspirationNext);
+      document.addEventListener("keydown", onInspirationKeydown);
 
       return () => {
         inspirationBtn.removeEventListener("click", toggleInspiration);
-        document.removeEventListener("keydown", onInspirationEscape);
+        inspirationPrev?.removeEventListener("click", goInspirationPrev);
+        inspirationNext?.removeEventListener("click", goInspirationNext);
+        document.removeEventListener("keydown", onInspirationKeydown);
         inspirationCtx?.revert();
         inspirationCtx = null;
         inspirationTl = null;
