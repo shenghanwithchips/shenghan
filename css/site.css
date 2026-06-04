@@ -5,6 +5,20 @@
   --content: 38rem;
   /* Heading1（Work、Contact 等小标题）与下方内容的间距 */
   --space-heading1-content: 1.5rem;
+  --inspiration-frame-border: clamp(10px, 1.2vw, 16px);
+  --inspiration-media-w: min(calc(100vw - 7.5rem), 40rem);
+  --inspiration-media-h: calc(var(--inspiration-media-w) * 9 / 16);
+  --inspiration-frame-w: calc(var(--inspiration-media-w) + (var(--inspiration-frame-border) * 2));
+}
+
+@media (min-width: 760px) {
+  :root {
+    --inspiration-media-w: min(
+      calc(100vw - 10.75rem),
+      calc((100svh - 10.5rem) * 16 / 9),
+      68rem
+    );
+  }
 }
 
 *,
@@ -131,6 +145,220 @@ body.inspiration-active .inspiration-btn:hover {
   z-index: 15;
   background: #000;
   visibility: hidden;
+  overflow: hidden;
+}
+
+.inspiration-collection {
+  box-sizing: border-box;
+  min-height: 100svh;
+  padding: clamp(3.25rem, 7svh, 5.75rem) 0.75rem clamp(2.25rem, 5svh, 4rem);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.inspiration-stage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+}
+
+.inspiration-track {
+  position: relative;
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.inspiration-piece {
+  grid-area: 1 / 1;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, var(--inspiration-frame-w));
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.inspiration-piece[hidden] {
+  display: none;
+}
+
+.inspiration-piece.is-active {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.inspiration-nav {
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  color: rgba(255, 255, 255, 0.72);
+  transition: color 140ms ease, opacity 140ms ease;
+}
+
+.inspiration-nav svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.inspiration-nav:hover {
+  color: #fff;
+  opacity: 1;
+}
+
+.inspiration-nav:disabled {
+  opacity: 0.2;
+  cursor: default;
+  pointer-events: none;
+}
+
+.inspiration-frame {
+  box-sizing: border-box;
+  width: var(--inspiration-frame-w);
+  height: calc(var(--inspiration-media-h) + (var(--inspiration-frame-border) * 2));
+  border: var(--inspiration-frame-border) solid var(--white);
+  background: #000;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.inspiration-media {
+  display: block;
+  width: var(--inspiration-media-w);
+  height: var(--inspiration-media-h);
+  border: 0;
+}
+
+.inspiration-frame img.inspiration-media {
+  object-fit: cover;
+}
+
+.inspiration-frame iframe.inspiration-media {
+  background: #000;
+}
+
+.inspiration-video-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 1.25rem;
+  color: var(--white);
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.16), transparent 0.12rem),
+    #080808;
+}
+
+.inspiration-video-fallback-icon {
+  position: relative;
+  width: 2.65rem;
+  height: 2.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 50%;
+}
+
+.inspiration-video-fallback-icon::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 54%;
+  width: 0;
+  height: 0;
+  border-top: 0.42rem solid transparent;
+  border-bottom: 0.42rem solid transparent;
+  border-left: 0.66rem solid var(--white);
+  transform: translate(-50%, -50%);
+}
+
+.inspiration-video-fallback-kicker {
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.inspiration-video-fallback-title {
+  max-width: 18rem;
+  font-family: "Instrument Serif", "Instrument Serif Fallback", Georgia, serif;
+  font-size: 1.25rem;
+  letter-spacing: 0;
+  line-height: 1.05;
+}
+
+.inspiration-frame--text {
+  display: flex;
+  align-items: stretch;
+}
+
+.inspiration-text {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--inspiration-media-w);
+  height: var(--inspiration-media-h);
+  margin: 0;
+  padding: clamp(1.15rem, 5vw, 4.5rem);
+  overflow-y: auto;
+  color: rgba(255, 255, 255, 0.92);
+  font-family: Spectral, Georgia, serif;
+  font-size: 1.125rem;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.28;
+}
+
+.inspiration-text p {
+  max-width: 32ch;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.inspiration-caption {
+  margin: 1rem 0 0;
+  width: var(--inspiration-frame-w);
+  color: rgba(255, 255, 255, 0.72);
+  font-family: "Instrument Serif", "Instrument Serif Fallback", Georgia, serif;
+  font-size: 1.0625rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.35;
+  text-align: center;
+}
+
+@media (min-width: 760px) {
+  .inspiration-text {
+    font-size: 2.15rem;
+  }
+
+  .inspiration-caption {
+    font-size: 1.25rem;
+  }
+
+  .inspiration-video-fallback-title {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 759px) {
+  .inspiration-frame--text {
+    height: calc((var(--inspiration-media-w) * 1.28) + (var(--inspiration-frame-border) * 2));
+  }
+
+  .inspiration-frame--text .inspiration-text {
+    height: calc(var(--inspiration-media-w) * 1.28);
+  }
 }
 
 body.inspiration-active {
