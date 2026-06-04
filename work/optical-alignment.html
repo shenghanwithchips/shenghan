@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="fonts-ready">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Optical alignment agent skill — Sheng Han">
+  <title>optical-alignment.skill — Sheng Han</title>
+  <link rel="preload" href="../fonts/instrument-serif.woff2" as="font" type="font/woff2">
+  <link rel="preload" href="../fonts/geist-400.woff2" as="font" type="font/woff2">
+  <link rel="stylesheet" href="../css/fonts.css">
+  <script src="../js/head-boot.js"></script>
+  <link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+  <div class="shell">
+    <main class="main">
+      <a class="case-back" href="../index.html">← Work</a>
+      <h1 class="case-title">optical-alignment.skill</h1>
+      <p class="case-sub">An agent skill for layouts that measure correctly but still look wrong — numeric alignment as the baseline, then small optical nudges that match what the eye perceives.</p>
+      <p class="case-actions">
+        <a class="chip chip-fill" href="https://github.com/shenghanwithchips/optical-alignment" target="_blank" rel="noopener noreferrer">Open</a>
+      </p>
+
+      <article class="prose">
+        <h2>The problem</h2>
+        <p>Auto-layout, grids, and equal padding often produce interfaces that are symmetric on paper but feel pulled left, heavy at the top, or uneven beside real type and icons. Agents and designers default to “align everything equally,” which does not fix glyph shape, punctuation, visual mass, or misleading bounding boxes.</p>
+
+        <h2>Core principle</h2>
+        <p>Numeric alignment is the starting measurement, not the final decision. The skill teaches agents to establish the mechanical baseline first, diagnose why perceived balance fails, apply the smallest useful nudge on the axis that matters, and encode the result as a token or a documented one-off.</p>
+
+        <h2>What the skill covers</h2>
+        <ul>
+          <li>Headlines, display type, hanging punctuation, and optical margins</li>
+          <li>Button padding, cards, baseline-aware spacing, and icon centering</li>
+          <li>Figma/CSS handoff — wrappers, transforms, and visual-only offsets without shrinking hit areas</li>
+          <li>A review rubric and structured output: baseline → symptom → cause → nudge → implementation → validation</li>
+        </ul>
+
+        <h2>Workflow</h2>
+        <p>Seven steps: measure the grid and metrics; inspect at actual size; name the visual cause; nudge margin, padding, or transform; compare in context beside neighbors; encode repeating patterns; validate in the real browser with responsive states, localization, and focus rings.</p>
+
+        <h2>Guardrails</h2>
+        <p>No invented universal pixel constants, no judging from CSS alone without rendering, no shrinking touch targets for aesthetics, and no over-tuning dynamic body copy — prioritize stable hero copy, marketing blocks, and reusable UI primitives.</p>
+
+        <h2>Status</h2>
+        <p>Published on GitHub.</p>
+      </article>
+
+      <footer class="page-foot">
+        <span>© 2026 Sheng Han</span>
+      </footer>
+    </main>
+  </div>
+  <script src="../js/site.js"></script>
+</body>
+</html>

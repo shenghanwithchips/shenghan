@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="fonts-ready">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Aether case study — Sheng Han">
+  <title>Aether — Sheng Han</title>
+  <link rel="preload" href="../fonts/instrument-serif.woff2" as="font" type="font/woff2">
+  <link rel="preload" href="../fonts/geist-400.woff2" as="font" type="font/woff2">
+  <link rel="stylesheet" href="../css/fonts.css">
+  <script src="../js/head-boot.js"></script>
+  <link rel="stylesheet" href="../css/site.css">
+</head>
+<body>
+  <div class="shell">
+    <main class="main">
+      <a class="case-back" href="../index.html">← Work</a>
+      <h1 class="case-title">Aether</h1>
+      <p class="case-sub">A small exploration in AI-produced UI — a landing page and a web app built around one quiet idea: an interface that feels clear and friendly, not like AI slop.</p>
+      <p class="case-actions">
+        <a class="chip chip-fill" href="https://aether-gamma-three.vercel.app/" target="_blank" rel="noopener noreferrer">Open</a>
+      </p>
+
+      <article class="prose">
+        <h2>The aim</h2>
+        <p>Aether started as a way to see how clearly I could direct AI tools, and how well different AI systems could work together to produce an interface with real craft. The product is built around three things sharing one surface: a sidebar for past conversations, a chat area that replies in calm prose, and a Plan view that fills in from what the user says in chat.</p>
+
+        <figure class="prose-figure">
+          <img src="aether-assets/New_chat_expand.png" alt="Aether app — empty new-chat state with a single input and a quiet sidebar" loading="lazy">
+        </figure>
+
+        <h2>Chat that stays calm</h2>
+        <p>The chat area replies in plain prose rather than noisy bubbles and dense controls. Keeping the reply quiet makes the assistant feel like a companion you think out loud with, instead of a tool that demands to be managed.</p>
+
+        <figure class="prose-figure">
+          <img src="aether-assets/Chats.png" alt="Aether chat replying in calm prose with a single composer at the bottom" loading="lazy">
+        </figure>
+
+        <h2>Plan view: space follows attention</h2>
+        <p>The obvious way to lay out Today, Tomorrow, and This Week would be three equal columns. I gave Today (Next) 50% of the space, while Tomorrow and This Week each take 25%.</p>
+        <p>The reasoning is about attention, not symmetry. On any given day, now is the only section the user directly acts on — the rest is mostly context to glance at. Equal columns would imply all three matter equally, which doesn't match how a day is actually lived. So the layout gives most of its space to now.</p>
+
+        <figure class="prose-figure">
+          <img src="aether-assets/plan.png" alt="Aether Plan Review — Next takes half the width, Tomorrow and This Week share the other half" loading="lazy">
+        </figure>
+
+        <h2>No form to fill</h2>
+        <p>I avoided a traditional "create schedule" flow. Without AI, adding to a plan means clicking new event, choosing a time, typing a description, picking a date — that works, but it adds friction.</p>
+        <p>The principle: the interface shouldn't ask for structured input when natural language already contains the structure. The user types their schedule into the chat, and the app places it into Next, Tomorrow, or This Week — no separate task-creation flow that repeats the same information.</p>
+
+        <h2>Putting things where they belong</h2>
+        <p>I reworked the sidebar's information architecture so primary actions — New Chat and Search — sit apart from the history of past conversations, and refined the icons so the hierarchy reads at a glance. Long chat titles truncate with an ellipsis and reveal the full title on hover, keeping the list scannable without permanently hiding information.</p>
+
+        <figure class="prose-figure">
+          <img src="aether-assets/New_chat.png" alt="Aether with the sidebar collapsed, giving the conversation full width" loading="lazy">
+        </figure>
+
+        <h2>The small states that make it feel better</h2>
+        <p>A lot of the "finished" feeling comes from small states people may not consciously notice. The cursor only becomes a pointer on things that are actually clickable, so the interface stays honest about what it affords. New Chat, Search, and Plan each show a tooltip on hover, so icon-only controls stay understandable without adding visible labels. The whole interface is reachable by keyboard through ⌘S search.</p>
+
+        <figure class="prose-figure">
+          <img src="aether-assets/search.png" alt="Aether ⌘S search overlay listing actions and recent conversations" loading="lazy">
+        </figure>
+
+        <h2>The landing page</h2>
+        <p>The landing page follows the same principle as the app: restraint and minimalism, in service of directing attention to the content. To check whether it worked, I tested the flow with two people and watched where their behaviour differed from what I expected. Three findings shaped the next iteration.</p>
+
+        <h2>Finding 1 — the demo worked too well</h2>
+        <p>The first screen put the inline demo front and centre. Both testers went straight to it, interacted, and then assumed the page ended there; one opened the product without scrolling further. In one sense that's a successful conversion, but they missed the sections explaining the thinking behind Aether — the first screen didn't signal that there was more content below.</p>
+
+        <figure class="prose-figure">
+          <img src="aether-assets/issue1-1.png" alt="Original Aether opening — the inline demo input sits front and centre on the first screen" loading="lazy">
+        </figure>
+
+        <figure class="prose-figure">
+          <img src="aether-assets/issue1-2.png" alt="Testers reached the demo result and clicked Open demo without scrolling further" loading="lazy">
+        </figure>
+
+        <p>The change: rework the first screen toward a Linear-style opening — a title with the top of the real app already visible. When only part of the interface shows, it feels cut off and pulls the eye down. The interactive demo moves to the second screen, so it's still the payoff but no longer a stopping point too early.</p>
+
+        <figure class="prose-figure">
+          <img src="aether-assets/landing-1.png" alt="Redesigned Aether opening — headline with the top of the real app interface visible below" loading="lazy">
+        </figure>
+
+        <h2>Finding 2 — conflicting signals about what was clickable</h2>
+        <p>One list had no container; despite a consistent hover dot, a tester didn't read it as clickable. Elsewhere, a card with a visible border got clicked even though it only displayed content. These weren't two separate issues — they were the same affordance problem from opposite directions. Across the page, the border had quietly become the signal for "interactive," so the bordered display card over-promised while the border-less list under-promised.</p>
+
+        <figure class="prose-figure">
+          <img src="aether-assets/issue2-1.png" alt="Original surfaces list — border-less rows with only a small dot as the click cue" loading="lazy">
+        </figure>
+
+        <figure class="prose-figure">
+          <img src="aether-assets/issue2-2.png" alt="Original process cards — strong visible borders on display-only content" loading="lazy">
+        </figure>
+
+        <p>The change: make clickable and display-only elements read as clearly different categories, and keep that affordance consistent across the whole page instead of contradicting it from one screen to the next.</p>
+
+        <figure class="prose-figure">
+          <img src="aether-assets/landing-2.png" alt="Redesigned surfaces — each item now sits in a clear container so the list reads as interactive" loading="lazy">
+        </figure>
+
+        <figure class="prose-figure">
+          <img src="aether-assets/landing-3.png" alt="Redesigned process cards — softened borders so display-only content stops reading as clickable" loading="lazy">
+        </figure>
+
+        <h2>Status</h2>
+        <p>A personal exploration, not a shipped product.</p>
+      </article>
+    </main>
+  </div>
+  <script src="../js/site.js"></script>
+</body>
+</html>
