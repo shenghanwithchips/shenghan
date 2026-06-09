@@ -144,7 +144,9 @@ body.inspiration-active .inspiration-btn:hover {
   inset: 0;
   z-index: 15;
   background: #000;
+  opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   overflow: hidden;
 }
 
@@ -188,7 +190,9 @@ body.inspiration-active .inspiration-btn:hover {
   display: none;
 }
 
-.inspiration-piece.is-active {
+/* Only reveal when inspiration is open — avoids FOUC on return navigation
+   (child visibility:visible can override a hidden parent before GSAP runs). */
+body.inspiration-active .inspiration-piece.is-active:not([hidden]) {
   visibility: visible;
   opacity: 1;
   pointer-events: auto;
